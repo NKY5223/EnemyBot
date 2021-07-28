@@ -120,7 +120,7 @@ const commands = {
         description: `Craft some ${EMOJIS.arrow_shooter}`,
         category: "craft",
         tradeEx: true,
-        
+
         func: require("./commands/craft"),
         perms: "NORMAL"
     },
@@ -130,7 +130,7 @@ const commands = {
         syntax: `${prefix}help - Get a list of command\n${prefix}help <command> - Get info about the command`,
         description: `See a list of commands`,
         category: "other",
-        
+
         func: (message, _c, [cmdArg]) => {
             if (cmdArg) {
                 message.channel.send(new Discord.MessageEmbed((ADMINIDS.includes(message.author.id) ? adminEmbeds : embeds)[cmdArg] || new Discord.MessageEmbed()
@@ -262,7 +262,8 @@ client.on("message", message => {
                 return;
             }
             cd[c] = Date.now();
-            command.func(message, commandName, args, inventories, prefix, set => {
+            command.func(message, commandName, args, inventories, trading, 
+                prefix, set => {
                 if (set) inventories = set;
                 db.set("inv", inventories);
             }, set => {
