@@ -222,7 +222,7 @@ client.once("ready", () => {
     console.log("Logged in as", client.user.tag);
 });
 
-const CHANNELIDS = ["863672313785876500", "854761820728197170"];
+const CHANNELIDS = ["863672313785876500"/*, "854761820728197170"*/];
 
 client.on("message", message => {
     if (!inventories) return;
