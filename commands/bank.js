@@ -4,7 +4,7 @@ const NAMES = require("../lib/names");
 const order = ["mover", "generator", "push", "slide", "rotator", "rotator_ccw", "trash", "enemy"];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id], inventories, prefix) => {
+module.exports = (message, _c, [id], inventories, _t, prefix) => {
     let name;
     let avatar;
     if (!id) {

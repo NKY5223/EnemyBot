@@ -4,7 +4,7 @@ const NAMES = require("../lib/names");
 const randomCell = require("../lib/randomCell");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, _a, inventories, _p, setInv) => {
+module.exports = (message, _c, _a, inventories, _t, _p, setInv) => {
     if (!(message.author.id in inventories)) inventories[message.author.id] = {};
     const inv = inventories[message.author.id];
 

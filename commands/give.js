@@ -4,7 +4,7 @@ const NAMES = require("../lib/names");
 const UNGIVEABLE = [...require("../lib/trophies.json")];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id, item, count = 1], inventories, prefix, setInv) => {
+module.exports = (message, _c, [id, item, count = 1], inventories, _t, prefix, setInv) => {
     if (!(message.author.id in inventories)) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle("You do not have an inventory.")

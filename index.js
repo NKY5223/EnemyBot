@@ -11,9 +11,9 @@ const ADMINIDS = ["702757890460745810", "520293520418930690", "71916321179382579
 const db = new (require("@replit/database"))();
 
 /**
- * @typedef { { [item: string]: number } } InvLike
+ * @typedef { { [item: string]: Type } } InvLike
  * @typedef { { [id: string]: InvLike } } InvsLike
- * @typedef { (message: Discord.Message, commandName: string, args: string[], inventories: InvsLike, prefix: string, setInv: (inv?: InvsLike) => void, setCD: (cd?: InvsLike) => void) => void } CommandFunc
+ * @typedef { (message: Discord.Message, commandName: string, args: string[], inventories: InvsLike, trading: { [id: string]: boolean }, prefix: string, setInv: (inv?: InvsLike) => void, setCD: (cd?: InvsLike) => void) => void } CommandFunc
  * @typedef { { cooldown: number, aliases: string[], syntax: string, description: string, category: string, func: CommandFunc, perms: "NORMAL" | "ADMIN" } } Command
  */
 /** @type {InvsLike} */
@@ -37,6 +37,9 @@ db.get("cd").then(cd => {
         db.set("cd", {});
     }
 });
+
+/** @type { { [ id: string ]: boolean } } */
+const trading = {};
 
 
 function toTime(ms = 0) {
@@ -96,7 +99,7 @@ const commands = {
         syntax: `${prefix}trophies - See the trophies you have collected (if any)\n${prefix}trophies <@user> - See the trophies of other users`,
         description: `See your 🏆`,
         category: "other",
-        
+
         func: require("./commands/trophies"),
         perms: "NORMAL"
     },
@@ -106,7 +109,7 @@ const commands = {
         syntax: `${prefix}daily - Open your daily crate!`,
         description: `Use everyday for 2-4 ${EMOJIS.mover}`,
         category: "cell",
-        
+
         func: require("./commands/daily"),
         perms: "NORMAL"
     },
@@ -116,7 +119,8 @@ const commands = {
         syntax: `${prefix}craft - Get a list of crafting recipes\n${prefix}craft <craft_name> - Craft a craft, where craft_name is the internal name (see ${prefix}items)`,
         description: `Craft some ${EMOJIS.arrow_shooter}`,
         category: "craft",
-
+        tradeEx: true,
+        
         func: require("./commands/craft"),
         perms: "NORMAL"
     },
@@ -130,8 +134,8 @@ const commands = {
         func: (message, _c, [cmdArg]) => {
             if (cmdArg) {
                 message.channel.send(new Discord.MessageEmbed((ADMINIDS.includes(message.author.id) ? adminEmbeds : embeds)[cmdArg] || new Discord.MessageEmbed()
-                .setTitle(`Could not find command \`${cmdArg}\``)
-                .setColor("#E82727")
+                    .setTitle(`Could not find command \`${cmdArg}\``)
+                    .setColor("#E82727")
                 ));
             } else {
                 message.channel.send(new Discord.MessageEmbed((ADMINIDS.includes(message.author.id) ? adminEmbed : embed)));
@@ -144,7 +148,8 @@ const commands = {
         syntax: `${prefix}give <@user> <item> [count] - <item> is the internal name (see ${prefix}items)`,
         description: `Give someone some items`,
         category: "trade",
-        
+        tradeEx: true,
+
         func: require("./commands/give"),
         perms: "NORMAL"
     },
@@ -154,7 +159,7 @@ const commands = {
         syntax: `${prefix}trade - Display current trade offers (if any)\n${prefix}trade <@user> - Initiate a trade with the user\n${prefix}trade add <item> [count] - Add items to your offer. <item> is internal name (see ${prefix}items)\n${prefix}trade remove <item> [count] - Remove items from your offer. <item> is internal name (see ${prefix}items)`,
         description: `Trade with someone`,
         category: "trade",
-        
+
         func: require("./commands/trade"),
         perms: "NORMAL"
     },
@@ -164,7 +169,7 @@ const commands = {
         syntax: `${prefix}items - Get a list of items, their internal name, and emojis.`,
         description: `Lists items`,
         category: "other",
-        
+
         func: require("./commands/items"),
         perms: "NORMAL"
     },
@@ -249,6 +254,13 @@ client.on("message", message => {
                 .setColor("#E82727")
             );
         } else {
+            if (command.tradeEx && trading[message.author.id]) {
+                message.channel.send(new Discord.MessageEmbed()
+                    .setTitle(`You cannot use this command while trading!`)
+                    .setColor("#E82727")
+                );
+                return;
+            }
             cd[c] = Date.now();
             command.func(message, commandName, args, inventories, prefix, set => {
                 if (set) inventories = set;

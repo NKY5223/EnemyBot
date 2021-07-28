@@ -3,7 +3,7 @@ const EMOJIS = require("../lib/emojis");
 const NAMES = require("../lib/names");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id, item = "push", count = 1], inventories, _p, setInv) => {
+module.exports = (message, _c, [id, item = "push", count = 1], inventories, _p, _t, setInv) => {
     if (!(item in NAMES)) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle(`Item \`${item}\` does not exist.`)

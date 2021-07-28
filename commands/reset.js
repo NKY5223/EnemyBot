@@ -2,7 +2,7 @@ const EMOJIS = require("../lib/emojis");
 const Discord = require("discord.js");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [type], inventories, _p, setInv, setCD) => {
+module.exports = (message, _c, [type], inventories, _t, _p, setInv, setCD) => {
     const embed = new Discord.MessageEmbed()
         .setAuthor("⚠️ DANGER")
         .setDescription("This action is irreversible!")

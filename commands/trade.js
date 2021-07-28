@@ -19,7 +19,7 @@ const UNTRADEABLE = [...require("../lib/trophies.json")];
 
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [type, item, count = 1], inventories, prefix, setInv) => {
+module.exports = (message, _c, [type, item, count = 1], inventories, trading, prefix, setInv) => {
     switch (type) {
         case "add":
         case "a": {
@@ -185,6 +185,8 @@ module.exports = (message, _c, [type, item, count = 1], inventories, prefix, set
                             .setTitle(`Trade cancelled.`)
                             .setColor("#E82727")
                         );
+                        trading[trade.ids[0]] = false;
+                        trading[trade.ids[1]] = false;
                         trades.splice(trades.indexOf(trade), 1);
                         return;
                     }
@@ -197,12 +199,13 @@ module.exports = (message, _c, [type, item, count = 1], inventories, prefix, set
                             .addFields(fields)
                             .setColor("#E82727")
                         );
+                        trading[trade.ids[0]] = false;
+                        trading[trade.ids[1]] = false;
                         trades.splice(trades.indexOf(trade), 1);
-                        Object.entries(trade.offers[0]).forEach(([item, count]) => trade.invs[0][item] -= count);
-                        Object.entries(trade.offers[1]).forEach(([item, count]) => trade.invs[1][item] -= count);
-
-                        Object.entries(trade.offers[0]).forEach(([item, count]) => (item in trade.invs[1]) ? trade.invs[1][item] += count : trade.invs[1][item] = count);
-                        Object.entries(trade.offers[1]).forEach(([item, count]) => (item in trade.invs[0]) ? trade.invs[0][item] += count : trade.invs[0][item] = count);
+                        
+                        Object.entries(trade.offers[0]).forEach(([item, count]) => trade.invs[0][item] -= count, trade.invs[1] += count);
+                        Object.entries(trade.offers[1]).forEach(([item, count]) => trade.invs[1][item] -= count, trade.invs[0] += count);
+                        setInv();
                         return;
                     }
                     initMsg.edit(new Discord.MessageEmbed(initMsg.embeds[0])
@@ -282,6 +285,8 @@ module.exports = (message, _c, [type, item, count = 1], inventories, prefix, set
                     acceptM: null,
                     acceptRC: null
                 });
+                        trading[from.id] = true;
+                        trading[to.id] = true;
                 message.channel.send(new Discord.MessageEmbed()
                     .setTitle(`Trade initiated:`)
                     .setDescription(`<@!${from.id}> ⇄ <@!${to.id}>`)

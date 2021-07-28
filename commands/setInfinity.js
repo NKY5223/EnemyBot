@@ -3,7 +3,7 @@ const EMOJIS = require("../lib/emojis");
 const NAMES = require("../lib/names");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [item], inventories, _p, setInv) => {
+module.exports = (message, _c, [item], inventories, _t, _p, setInv) => {
     if (!item) {
         message.channel.send(new Discord.MessageEmbed()
             .setDescription("what do i set to infinity lol")

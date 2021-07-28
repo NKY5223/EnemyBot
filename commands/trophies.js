@@ -4,7 +4,7 @@ const NAMES = require("../lib/names");
 const order = require("../lib/trophies.json");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id], inventories, prefix) => {
+module.exports = (message, _c, [id], inventories) => {
     let name;
     let avatar;
     if (!id) {

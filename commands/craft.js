@@ -9,7 +9,7 @@ const RECIPES = require("../lib/recipes");
 const HIDDENCRAFTS = [...require("../lib/trophies.json")];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [craftName], inventories, prefix, setInv) => {
+module.exports = (message, _c, [craftName], inventories, _t, prefix, setInv) => {
     if (!(message.author.id in inventories)) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle("You do not have an inventory.")
