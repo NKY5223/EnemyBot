@@ -173,6 +173,16 @@ const commands = {
         func: require("./commands/items"),
         perms: "NORMAL"
     },
+    ping: {
+        cooldown: 0,
+        aliases: ["ping", "p"],
+        syntax: `${prefix}ping - Ping the bot! See how good/bad replit's internet is.`,
+        description: `🏓`,
+        category: "other",
+
+        func: require("./commands/ping"),
+        perms: "NORMAL"
+    },
     add: {
         cooldown: 0,
         aliases: ["add"],
