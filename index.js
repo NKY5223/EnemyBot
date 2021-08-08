@@ -200,8 +200,8 @@ const commands = {
     reset: {
         cooldown: 0,
         aliases: ["reset"],
-        syntax: `${prefix}reset ?<type: cd | inv | all> - reset.`,
-        description: `Reset everyone's progress\n|| Ooooh what does this red button do- 👉🔴 ||`,
+        syntax: `${prefix}reset <@user> - reset.`,
+        description: `Reset someone's progress\n|| Ooooh what does this red button do- 👉🔴 ||`,
         category: "admin",
 
         func: require("./commands/reset"),
