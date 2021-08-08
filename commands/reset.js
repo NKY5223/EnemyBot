@@ -2,23 +2,14 @@ const EMOJIS = require("../lib/emojis");
 const Discord = require("discord.js");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [type], inventories, _t, _p, setInv, setCD) => {
+module.exports = (message, _c, _a, data, _t, _p, setData) => {
+    if (!(message.mentions.users.size && !message.mentions.users.first().bot)) return;
     const embed = new Discord.MessageEmbed()
+        .setTitle(`Are you sure you want to reset ${message.mentions.users.first().tag}'s inventory?`)
         .setAuthor("⚠️ DANGER")
         .setDescription("This action is irreversible!")
         .setColor("#E82727");
 
-    if (!type || type === "all") {
-        embed.setTitle("Are you sure you want to reset inventories and cooldowns?");
-    } else if (type === "inv") {
-        if (message.mentions.users.size && !message.mentions.users.first().bot) {
-            embed.setTitle(`Are you sure you want to reset ${message.mentions.users.first().tag}'s inventory?`);
-        } else {
-            embed.setTitle("Are you sure you want to reset inventories?");
-        }
-    } else if (type === "cd") {
-        embed.setTitle("Are you sure you want to reset cooldowns?");
-    }
     message.channel.send(embed).then(confirmMsg => {
         confirmMsg.react("✅").then(() => confirmMsg.react("❌"));
         confirmMsg.awaitReactions(
@@ -27,38 +18,15 @@ module.exports = (message, _c, [type], inventories, _t, _p, setInv, setCD) => {
         ).then(collected => {
             let reaction = collected.first();
             if (reaction.emoji.name === "✅") {
-                if (type === "inv" && message.mentions.users.size && !message.mentions.users.first().bot) {
-                    inventories[message.mentions.users.first().id] = {};
-                } else if (!type || type === "inv" || type === "all") {
-                    // setInv({
-                    //     "862698871624957982": {
-                    //         mover: "Infinity",
-                    //         generator: "Infinity",
-                    //         push: "Infinity",
-                    //         slide: "Infinity",
-                    //         rotator: "Infinity",
-                    //         rotator_ccw: "Infinity",
-                    //         trash: "Infinity",
-                    //         enemy: "Infinity",
-
-                    //         arrow_shooter: "Infinity",
-                    //         mover_gear: "Infinity",
-                    //         enemy_vault: "Infinity",
-                    //         counter: "Infinity",
-                    //     }
-                    // });
-                    console.log("ER");
-                }
-                if (!type || type === "cd" || type === "all") {
-                    setCD({});
-                }
+                data[message.mentions.users.first().id].inventory.items = {};
+                setData();
                 confirmMsg.edit(new Discord.MessageEmbed()
-                    .setTitle("Data has been reset.")
+                    .setTitle(`${message.mentions.users.first().tag}'s inventory has been reset.`)
                     .setColor("#E82727")
                 )
             } else {
                 confirmMsg.edit(new Discord.MessageEmbed()
-                    .setTitle("Cancelled data reset.")
+                    .setTitle("Cancelled reset.")
                     .setColor("#E82727")
                 )
             }

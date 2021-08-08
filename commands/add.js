@@ -3,7 +3,7 @@ const EMOJIS = require("../lib/emojis");
 const NAMES = require("../lib/names");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id, item = "push", count = 1], inventories, _p, _t, setInv) => {
+module.exports = (message, _c, [id, item = "push", count = 1], data, _t, _p, setData) => {
     if (!(item in NAMES)) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle(`Item \`${item}\` does not exist.`)
@@ -53,8 +53,7 @@ module.exports = (message, _c, [id, item = "push", count = 1], inventories, _p, 
         }
     }
 
-    if (!(id in inventories)) inventories[id] = {};
-    const inv = inventories[id];
+    const inv = data[id];
     if (!(item in inv)) inv[item] = 0;
 
     count = Number(count);
@@ -65,5 +64,5 @@ module.exports = (message, _c, [id, item = "push", count = 1], inventories, _p, 
         .setColor("#E82727")
     );
 
-    setInv();
+    setData();
 };

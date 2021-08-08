@@ -11,30 +11,34 @@ const ADMINIDS = ["702757890460745810", "520293520418930690", "71916321179382579
 const db = new (require("@replit/database"))();
 
 /**
- * @typedef { { [item: string]: Type } } InvLike
- * @typedef { { [id: string]: InvLike } } InvsLike
- * @typedef { (message: Discord.Message, commandName: string, args: string[], inventories: InvsLike, trading: { [id: string]: boolean }, prefix: string, setInv: (inv?: InvsLike) => void, setCD: (cd?: InvsLike) => void) => void } CommandFunc
+ * @typedef { { [item: string]: number } } InvLike
+ * 
+ * @typedef User
+ * @property { Object } inventory inventory
+ * @property { InvLike } inventory.items item: count
+ * @property { string } inventory.name name of inv
+ * @property { InvLike } cooldowns command: date
+ * 
+ * @typedef { { [id: string]: User } } Data
+ * 
+ * @typedef { (message: Discord.Message, commandName: string, args: string[], data: Data, trading: { [id: string]: boolean }, prefix: string, setData: (data?: Data) => void) => void } CommandFunc
+ * 
  * @typedef { { cooldown: number, aliases: string[], syntax: string, description: string, category: string, func: CommandFunc, perms: "NORMAL" | "ADMIN" } } Command
+ * @property { number } cooldown in milliseconds
+ * @property { string } aliases alias[]
+ * @property { string } syntax basically a description
+ * @property { string } description actual description
+ * @property { string } category category for -help
+ * @property { CommandFunc } func command func
+ * @property { "NORMAL" | "ADMIN" } perms perms
  */
-/** @type {InvsLike} */
-let inventories = null;
-db.get("inv").then(inv => {
-    if (inv) {
-        inventories = inv;
+/** @type {Data} */
+let data = null;
+db.get("data").then(d => {
+    if (d) {
+        data = d;
     } else {
-        inventories = {};
-        db.set("inv", {});
-    }
-});
-
-/** @type {InvsLike} */
-let cooldowns = null;
-db.get("cd").then(cd => {
-    if (cd) {
-        cooldowns = cd;
-    } else {
-        cooldowns = {};
-        db.set("cd", {});
+        db.set("data", data = {});
     }
 });
 
@@ -252,9 +256,15 @@ client.on("message", message => {
             return;
         }
 
-        if (!(message.author.id in cooldowns)) cooldowns[message.author.id] = {};
+        if (!(message.author.id in data)) data[message.author.id] = {
+            inventory: {
+                name: `${message.author.tag}'s Bank`,
+                items: {}
+            },
+            cooldowns: {}
+        };
 
-        const cd = cooldowns[message.author.id];
+        const cd = data[message.author.id].cooldowns;
 
         const cdTime = (cd[c] || 0) + command.cooldown - Date.now();
 
@@ -272,14 +282,12 @@ client.on("message", message => {
                 return;
             }
             cd[c] = Date.now();
-            command.func(message, commandName, args, inventories, trading, 
-                prefix, set => {
-                if (set) inventories = set;
-                db.set("inv", inventories);
-            }, set => {
-                if (set) cooldowns = set;
-                db.set("cd", cooldowns);
-            });
+            command.func(message, commandName, args, data, trading, prefix,
+                set => {
+                    if (set) data = set;
+                    db.set("data", data);
+                }
+            );
             db.set("cd", cooldowns);
         }
     }

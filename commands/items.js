@@ -5,7 +5,7 @@ const EMOJIS = require("../lib/emojis");
 const HIDDEN = ["rickroll", ...require("../lib/trophies.json")];
 
 /** @type {import("../index").CommandFunc} */
-module.exports = (message) => {
+module.exports = message => {
     message.channel.send(new Discord.MessageEmbed()
         .setTitle("Items:")
         .addFields({

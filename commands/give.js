@@ -4,14 +4,7 @@ const NAMES = require("../lib/names");
 const UNGIVEABLE = [...require("../lib/trophies.json")];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id, item, count = 1], inventories, _t, prefix, setInv) => {
-    if (!(message.author.id in inventories)) {
-        message.channel.send(new Discord.MessageEmbed()
-            .setTitle("You do not have an inventory.")
-            .setColor("#E82727")
-        );
-        return;
-    }
+module.exports = (message, _c, [id, item, count = 1], data, _t, prefix, setData) => {
     if (!item) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle(`Command Syntax`)
@@ -82,14 +75,18 @@ module.exports = (message, _c, [id, item, count = 1], inventories, _t, prefix, s
             );
             return;
         }
+    } else if (!(id in data)) {
+        message.channel.send(new Discord.MessageEmbed()
+            .setTitle(`User ${id} hasn't used the bot yet`)
+            .setColor("#E82727")
+        );
+        return;
     }
 
     count = Number(count);
 
-    if (!(id in inventories)) inventories[id] = {};
-    const to = inventories[id];
-
-    const from = inventories[message.author.id];
+    const to = data[id].inventory.items;
+    const from = data[message.author.id].inventory.items;
 
     if (!(item in to)) to[item] = 0;
     if (!(item in from) || from[item] < count) {
@@ -109,5 +106,5 @@ module.exports = (message, _c, [id, item, count = 1], inventories, _t, prefix, s
         .setColor("#E82727")
     );
 
-    setInv();
+    setData();
 };

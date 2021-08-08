@@ -4,19 +4,19 @@ const NAMES = require("../lib/names");
 const order = require("../lib/trophies.json");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id], inventories) => {
-    let name;
+module.exports = (message, _c, [id], data) => {
     let avatar;
+    let username;
     if (!id) {
         const member = message.member;
         id = member.id;
-        name = member.nickname || member.user.username;
+        username = member.user.username;
         avatar = member.user.avatarURL();
     } else if (isNaN(id)) {
         if (message.mentions.members.size) {
             const member = message.mentions.members.first();
             id = member.id;
-            name = member.nickname || member.user.username;
+            username = member.user.username;
             avatar = member.user.avatarURL();
             if (member.user.bot) {
                 message.channel.send(new Discord.MessageEmbed()
@@ -34,21 +34,31 @@ module.exports = (message, _c, [id], inventories) => {
             return;
         }
     }
-    if (id in inventories) {
-        const inv = inventories[id];
-        message.channel.send(new Discord.MessageEmbed()
-            .setAuthor(`${name || id}'s Trophies (×${order.map(trophy => inv[trophy]).filter(n => n && n > 0).reduce((a, count) => a + Number(count), 0)})`, avatar)
-            .setColor("#E82727")
-            .setDescription(order.map(cell => {
-                if (!inv[cell]) return false;
-                let count = inv[cell];
-                return `**${count < 0 ? `[DEBT] ${-count}` : count}** ${NAMES[cell][count === 1 ? 0 : 1]} ${EMOJIS[cell]}`;
-            }).filter(s => s).join("\n"))
-        );
+    if (id in data) {
+        const { name, items } = data[id].inventory;
+        if (Object.entries(items).filter(([n, _c]) => order.includes(n)).reduce((a, [_n, c]) => a && c, true)) {
+            message.channel.send(new Discord.MessageEmbed()
+                .setAuthor(`${name} (×${order.map(trophy => items[trophy]).filter(n => n && n > 0).reduce((a, count) => a + Number(count), 0)})`, avatar)
+                .setColor("#E82727")
+                .setDescription(order.map(trophy => {
+                    if (!items[trophy]) return false;
+                    let count = items[trophy];
+                    return `**${count < 0 ? `[DEBT] ${-count}` : count}** ${NAMES[trophy][count === 1 ? 0 : 1]} ${EMOJIS[trophy]}`;
+                }).filter(s => s).join("\n"))
+            );
+        } else {
+            message.channel.send(new Discord.MessageEmbed()
+                .setTitle(`${name} (×0)`)
+                .setDescription("Wow, such empty.")
+                .setFooter(`??? to earn trophies`)
+                .setColor("#E82727")
+            );
+        }
     } else {
         message.channel.send(new Discord.MessageEmbed()
-            .setTitle(`${name || id}doesnt have any trophies!`)
-            .setFooter(`[REDACTED] to get trophies!`)
+            .setTitle(`${username || id}'s Bank (×0)`)
+            .setDescription("Wow, such empty.")
+            .setFooter(`??? to earn trophies`)
             .setColor("#E82727")
         );
     }

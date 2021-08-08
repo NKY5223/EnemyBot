@@ -9,15 +9,8 @@ const RECIPES = require("../lib/recipes");
 const HIDDENCRAFTS = [...require("../lib/trophies.json")];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [craftName], inventories, _t, prefix, setInv) => {
-    if (!(message.author.id in inventories)) {
-        message.channel.send(new Discord.MessageEmbed()
-            .setTitle("You do not have an inventory.")
-            .setColor("#E82727")
-        );
-        return;
-    }
-    const inv = inventories[message.author.id];
+module.exports = (message, _c, [craftName], data, _t, prefix, setData) => {
+    const inv = data[message.author.id].inventory.items;
     if (!craftName) {
         message.channel.send(new Discord.MessageEmbed()
             .setTitle(`Crafting Recipes`)
@@ -49,8 +42,8 @@ module.exports = (message, _c, [craftName], inventories, _t, prefix, setInv) => 
         const EMOJI = EMOJIS[craftName];
         const ARTICLE = NAMES[craftName][2];
         message.channel.send(new Discord.MessageEmbed()
-            .setTitle(canCraft 
-                ? `You have enough resources to craft ${ARTICLE} ${NAME} ${EMOJI}!` 
+            .setTitle(canCraft
+                ? `You have enough resources to craft ${ARTICLE} ${NAME} ${EMOJI}!`
                 : `You do not have enough resources to craft ${ARTICLE} ${NAME} ${EMOJI}.`
             )
             .setColor("#E82727")
@@ -64,7 +57,7 @@ module.exports = (message, _c, [craftName], inventories, _t, prefix, setInv) => 
                 confirmMsg.react("✅").then(() => confirmMsg.react("❌"));
             }
             confirmMsg.awaitReactions(
-                (reaction, user) => (reaction.emoji.name === "✅" || reaction.emoji.name === "❌") && user.id === message.author.id, 
+                (reaction, user) => (reaction.emoji.name === "✅" || reaction.emoji.name === "❌") && user.id === message.author.id,
                 { max: 1, time: 60000 }
             ).then(collected => {
                 if (collected.first() && collected.first().emoji.name === "✅") {
@@ -77,7 +70,7 @@ module.exports = (message, _c, [craftName], inventories, _t, prefix, setInv) => 
                         .setTitle(`Crafted ${ARTICLE} ${NAME} ${EMOJI}`)
                         .setColor("#E82727")
                     );
-                    setInv();
+                    setData();
                 } else {
                     confirmMsg.edit(new Discord.MessageEmbed()
                         .setTitle("Cancelled crafting.")

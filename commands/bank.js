@@ -4,24 +4,22 @@ const NAMES = require("../lib/names");
 const order = ["mover", "generator", "push", "slide", "rotator", "rotator_ccw", "trash", "enemy"];
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [id], inventories, _t, prefix) => {
-    let name;
+module.exports = (message, _c, [id], data, _t, prefix) => {
     let avatar;
+    let username;
     if (!id) {
         const member = message.member;
         id = member.id;
-        name = member.nickname || member.user.username;
+        username = member.user.username;
         avatar = member.user.avatarURL();
     } else if (isNaN(id)) {
         if (message.mentions.members.size) {
             const member = message.mentions.members.first();
             id = member.id;
-            name = member.nickname || member.user.username;
+            username = member.user.username;
             avatar = member.user.avatarURL();
             if (member.user.bot) {
-                if (member.user.id === "862698871624957982") {
-                    name = "VeryEpicEnemyBot69420";
-                } else {
+                if (member.user.id !== "862698871624957982") {
                     message.channel.send(new Discord.MessageEmbed()
                         .setTitle(`${member.nickname || member.user.username} is a bot.`)
                         .setFooter("Bots don't have banks!")
@@ -38,21 +36,31 @@ module.exports = (message, _c, [id], inventories, _t, prefix) => {
             return;
         }
     }
-    if (id in inventories) {
-        const inv = inventories[id];
-        message.channel.send(new Discord.MessageEmbed()
-            .setAuthor(`${name || id}'s Bank (×${order.map(cell => inv[cell]).filter(n => n && n > 0).reduce((a, count) => a + Number(count), 0)})`, avatar) 
-            .setColor("#E82727")
-            .setDescription(order.map(cell => {
-                if (!inv[cell]) return false;
-                let count = inv[cell];
-                return `**${count < 0 ? `[DEBT] ${-count}` : count}** ${NAMES[cell][count === 1 ? 0 : 1]} ${EMOJIS[cell]}`;
-            }).filter(s => s).join("\n"))
-        );
+    if (id in data) {
+        const { name, items } = data[id].inventory;
+        if (Object.entries(items).filter(([n, _c]) => order.includes(n)).reduce((a, [_n, c]) => a && c, true)) {
+            message.channel.send(new Discord.MessageEmbed()
+                .setAuthor(`${name} (×${order.map(cell => items[cell]).filter(n => n && n > 0).reduce((a, count) => a + Number(count), 0)})`, avatar)
+                .setColor("#E82727")
+                .setDescription(order.map(cell => {
+                    if (!items[cell]) return false;
+                    let count = items[cell];
+                    return `**${count < 0 ? `[DEBT] ${-count}` : count}** ${NAMES[cell][count === 1 ? 0 : 1]} ${EMOJIS[cell]}`;
+                }).filter(s => s).join("\n"))
+            );
+        } else {
+            message.channel.send(new Discord.MessageEmbed()
+                .setTitle(`${name} (×0)`)
+                .setDescription("Wow, such empty.")
+                .setFooter(`Use ${prefix}search to find cells.`)
+                .setColor("#E82727")
+            );
+        }
     } else {
         message.channel.send(new Discord.MessageEmbed()
-            .setTitle(`${name || id}'s Bank is empty!`)
-            .setFooter(`Use ${prefix}search to get cells!`)
+            .setTitle(`${username || id}'s Bank (×0)`)
+            .setDescription("Wow, such empty.")
+            .setFooter(`Use ${prefix}search to find cells.`)
             .setColor("#E82727")
         );
     }

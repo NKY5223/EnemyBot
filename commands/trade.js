@@ -20,6 +20,11 @@ const UNTRADEABLE = [...require("../lib/trophies.json")];
 
 /** @type { import("../index").CommandFunc } */
 module.exports = (message, _c, [type, item, count = 1], inventories, trading, prefix, setInv) => {
+    message.channel.send(new Discord.MessageEmbed()
+        .setTitle(`temporarily shut down because i am ded`)
+        .setColor("#E82727")
+    );
+    return;
     switch (type) {
         case "add":
         case "a": {
@@ -202,7 +207,7 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                         trading[trade.ids[0]] = false;
                         trading[trade.ids[1]] = false;
                         trades.splice(trades.indexOf(trade), 1);
-                        
+
                         Object.entries(trade.offers[0]).forEach(([item, count]) => trade.invs[0][item] -= count, trade.invs[1] += count);
                         Object.entries(trade.offers[1]).forEach(([item, count]) => trade.invs[1][item] -= count, trade.invs[0] += count);
                         setInv();
@@ -285,8 +290,8 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                     acceptM: null,
                     acceptRC: null
                 });
-                        trading[from.id] = true;
-                        trading[to.id] = true;
+                trading[from.id] = true;
+                trading[to.id] = true;
                 message.channel.send(new Discord.MessageEmbed()
                     .setTitle(`Trade initiated:`)
                     .setDescription(`<@!${from.id}> ⇄ <@!${to.id}>`)

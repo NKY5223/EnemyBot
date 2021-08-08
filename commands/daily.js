@@ -4,9 +4,8 @@ const NAMES = require("../lib/names");
 const randomCell = require("../lib/randomCell");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, _a, inventories, _t, _p, setInv) => {
-    if (!(message.author.id in inventories)) inventories[message.author.id] = {};
-    const inv = inventories[message.author.id];
+module.exports = (message, _c, _a, data, _t, _p, setData) => {
+    const inv = data[message.author.id].inventory.items;
 
     let random = Math.random();
     const amount = 2 + (random < 0.2) + (random < 0.8);
@@ -19,5 +18,5 @@ module.exports = (message, _c, _a, inventories, _t, _p, setInv) => {
         .setTitle(`Your daily crate included ${amount} ${NAMES[cell][1]}! ${EMOJIS[cell]}`)
         .setColor("#E82727")
     );
-    setInv();
+    setData();
 };

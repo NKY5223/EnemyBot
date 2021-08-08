@@ -4,9 +4,8 @@ const NAMES = require("../lib/names");
 const randomCell = require("../lib/randomCell");
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, _a, inventories, _t, _p, setInv) => {
-    if (!(message.author.id in inventories)) inventories[message.author.id] = {};
-    const inv = inventories[message.author.id];
+module.exports = (message, _c, _a, data, _t, _p, setData) => {
+    const inv = data[message.author.id].inventory.items;
 
     const cell = randomCell();
 
@@ -15,5 +14,5 @@ module.exports = (message, _c, _a, inventories, _t, _p, setInv) => {
 
     message.channel.send(`You found ${NAMES[cell][2]} ${NAMES[cell][0]}! ${EMOJIS[cell]}`);
 
-    setInv();
+    setData();
 };
