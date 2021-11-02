@@ -287,7 +287,6 @@ client.on("message", message => {
                     db.set("data", data);
                 }
             );
-            db.set("cd", cooldowns);
         }
     }
 });
