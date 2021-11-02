@@ -239,8 +239,7 @@ client.once("ready", () => {
 // const CHANNELIDS = ["863672313785876500"/*, "854761820728197170"*/];
 
 client.on("message", message => {
-    if (!inventories) return;
-    if (!cooldowns) return;
+    if (!data) return;
 
     if (message.author.bot) return;
     // if (!(ADMINIDS.includes(message.author.id) || CHANNELIDS.includes(message.channel.id) && message.guild)) return;
