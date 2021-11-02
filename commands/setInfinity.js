@@ -18,6 +18,7 @@ module.exports = (message, _c, [item], data, _t, _p, setData) => {
         );
         return;
     }
+    if (!"862698871624957982" in data) data["862698871624957982"] = { inventory: { name: "VeryEpicEnemyBot's Bank", items: {} }, cooldowns: {} };
     data["862698871624957982"].inventory.items[item] = "Infinity";
     setData();
 
