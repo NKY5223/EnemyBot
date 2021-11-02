@@ -236,14 +236,14 @@ client.once("ready", () => {
     console.log("Logged in as", client.user.tag);
 });
 
-const CHANNELIDS = ["863672313785876500"/*, "854761820728197170"*/];
+// const CHANNELIDS = ["863672313785876500"/*, "854761820728197170"*/];
 
 client.on("message", message => {
     if (!inventories) return;
     if (!cooldowns) return;
 
     if (message.author.bot) return;
-    if (!(ADMINIDS.includes(message.author.id) || CHANNELIDS.includes(message.channel.id) && message.guild)) return;
+    // if (!(ADMINIDS.includes(message.author.id) || CHANNELIDS.includes(message.channel.id) && message.guild)) return;
 
     if (!message.content.startsWith(prefix)) return;
 
