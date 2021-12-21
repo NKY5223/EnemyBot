@@ -1,10 +1,10 @@
 {
-    "mover": "<:m_0:861158960497557515>",
-    "generator": "<:g_0:860974519350591489>",
+    "mover": "<:mover_right:861158960497557515>",
+    "generator": "<:generator_right:860974519350591489>",
     "push": "<:push:861502344521056286>",
-    "slide": "<:s_0:861502201226854401>",
-    "rotator": "<:r_cw:861502627170877440>",
-    "rotator_ccw": "<:r_ccw:861502753733083136>",
+    "slide": "<:slide_horizontal:861502201226854401>",
+    "rotator": "<:rotator:861502627170877440>",
+    "rotator_ccw": "<:rotator_anticlockwise:861502753733083136>",
     "trash": "<:trash:861158960597958657>",
     "enemy": "<:enemy:861502470932922378>",
 

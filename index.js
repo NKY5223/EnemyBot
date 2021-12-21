@@ -18,6 +18,7 @@ const db = new (require("@replit/database"))();
  * @property { InvLike } inventory.items item: count
  * @property { string } inventory.name name of inv
  * @property { InvLike } cooldowns command: date
+ * @property { number } registerTime Time of registration
  * 
  * @typedef { { [id: string]: User } } Data
  * 
@@ -26,7 +27,7 @@ const db = new (require("@replit/database"))();
  * @typedef { { cooldown: number, aliases: string[], syntax: string, description: string, category: string, func: CommandFunc, perms: "NORMAL" | "ADMIN" } } Command
  * @property { number } cooldown in milliseconds
  * @property { string } aliases alias[]
- * @property { string } syntax basically a description
+ * @property { string } syntax command syntax
  * @property { string } description actual description
  * @property { string } category category for -help
  * @property { CommandFunc } func command func
@@ -260,7 +261,8 @@ client.on("message", message => {
                 name: `${message.author.tag}'s Bank`,
                 items: {}
             },
-            cooldowns: {}
+            cooldowns: {},
+            registerTime: Date.now()
         };
 
         const cd = data[message.author.id].cooldowns;

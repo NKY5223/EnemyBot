@@ -19,12 +19,13 @@ const UNTRADEABLE = [...require("../lib/trophies.json")];
 
 
 /** @type { import("../index").CommandFunc } */
-module.exports = (message, _c, [type, item, count = 1], inventories, trading, prefix, setInv) => {
-    message.channel.send(new Discord.MessageEmbed()
-        .setTitle(`temporarily shut down because i am ded`)
-        .setColor("#E82727")
-    );
-    return;
+module.exports = (message, _c, [type, item, count = 1], data, trading, prefix, setData) => {
+    
+    // message.channel.send(new Discord.MessageEmbed()
+    //     .setTitle(`temporarily shut down because i am ded`)
+    //     .setColor("#E82727")
+    // );
+    // return;
     switch (type) {
         case "add":
         case "a": {
@@ -79,7 +80,7 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                 );
                 return;
             }
-            if (inv[item] < (offer[item] || 0) + count) {
+            if (inv[item] < ((offer[item] || 0) + count)) {
                 message.channel.send(new Discord.MessageEmbed()
                     .setTitle(`You don't have enough ${NAMES[item][1]} ${EMOJIS[item]} in your inventory.`)
                     .setColor("#E82727")
@@ -208,9 +209,19 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                         trading[trade.ids[1]] = false;
                         trades.splice(trades.indexOf(trade), 1);
 
-                        Object.entries(trade.offers[0]).forEach(([item, count]) => trade.invs[0][item] -= count, trade.invs[1] += count);
-                        Object.entries(trade.offers[1]).forEach(([item, count]) => trade.invs[1][item] -= count, trade.invs[0] += count);
-                        setInv();
+                        Object.entries(trade.offers[0]).forEach(([item, count]) => {
+                            if (count < 0) return;
+                            count = Math.min(count, trade.invs[0][item]);
+                            trade.invs[0][item] -= count;
+                            trade.invs[1][item] += count;
+                        });
+                        Object.entries(trade.offers[1]).forEach(([item, count]) => {
+                            if (count < 0) return;
+                            count = Math.min(count, trade.invs[1][item]);
+                            trade.invs[1][item] -= count;
+                            trade.invs[0][item] += count;
+                        });
+                        setData();
                         return;
                     }
                     initMsg.edit(new Discord.MessageEmbed(initMsg.embeds[0])
@@ -266,7 +277,7 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                     );
                     return;
                 }
-                if (!(to.id in inventories)) {
+                if (!(to.id in data)) {
                     message.channel.send(new Discord.MessageEmbed()
                         .setTitle(`${to.tag} doesn't have an inventory 😕`)
                         .setColor("#E82727")
@@ -285,7 +296,7 @@ module.exports = (message, _c, [type, item, count = 1], inventories, trading, pr
                     ids: [from.id, to.id],
                     names: [from.tag, to.user.tag],
                     offers: [{}, {}],
-                    invs: [inventories[from.id], inventories[to.id]],
+                    invs: [data[from.id].inventory.items, data[to.id].inventory.items],
                     channel: message.channel,
                     acceptM: null,
                     acceptRC: null
